@@ -1,0 +1,4 @@
+BERT (Binary ERlang Term) serialization library for PHP
+
+A PHP port of the Ruby BERT serializer: http://github.com/mojombo/bert
+
