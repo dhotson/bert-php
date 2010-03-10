@@ -176,6 +176,6 @@ class Bert_Encode
 
 	private function _fail($str)
 	{
-		throw new Excption("Cannot encode to erlang external format: $str");
+		throw new Exception("Cannot encode to erlang external format: $str");
 	}
 }
