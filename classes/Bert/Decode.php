@@ -206,12 +206,12 @@ class Bert_Decode
 				for ($i=0; $i<$arity - 1; $i++)
 					$tuple []= $this->readAnyRaw();
 
-				return $tuple;
+				return new Bert_Tuple($tuple);
 			}
 		}
 		else
 		{
-			return array();
+			return new Bert_Tuple();
 		}
 	}
 

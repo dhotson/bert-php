@@ -40,7 +40,10 @@ class Bert_Encoder
 		}
 		elseif ($obj instanceof Bert_Tuple)
 		{
-			return array_map(array('self', 'convert'), $obj);
+			return new Bert_Tuple(
+				array_map(
+					array('self', 'convert'),
+					iterator_to_array($obj)));
 		}
 		elseif (is_array($obj))
 		{
