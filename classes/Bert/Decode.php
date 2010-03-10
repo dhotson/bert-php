@@ -194,7 +194,7 @@ class Bert_Decode
 		if ($arity > 0)
 		{
 			$tag = $this->readAnyRaw();
-			if ($tag === 'bert')
+			if ($tag == Bert::a('bert'))
 			{
 				return $this->readComplexType($arity);
 			}
@@ -219,17 +219,17 @@ class Bert_Decode
 	{
 		$val = $this->readAnyRaw();
 
-		if ($val === 'nil')
+		if ($val == Bert::a('nil'))
 			return null;
-		elseif ($val === 'true')
+		elseif ($val == Bert::a('true'))
 			return true;
-		elseif ($val === 'false')
+		elseif ($val == Bert::a('false'))
 			return false;
-		elseif ($val === 'time')
+		elseif ($val == Bert::a('time'))
 			return array($this->readAnyRaw() * 1000000 + $this->readAnyRaw(), + $this->readAnyRaw()); // TODO dhotson, use an appropriate Time type
-		elseif ($val === 'regex')
+		elseif ($val == Bert::a('regex'))
 			throw new Exception('Not implemented yet');
-		elseif ($val === 'dict')
+		elseif ($val == Bert::a('dict'))
 			return $this->readDict();
 		else
 			return null;

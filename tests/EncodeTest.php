@@ -85,4 +85,13 @@ class EncodeTest extends UnitTestCase
 			pack('c*', 131, 109, 0, 0, 0, 13)."hello world\x00\xFF"
 		);
 	}
+
+	public function testEncodeAssocArray()
+	{
+		$this->assertEqual(
+			Bert::decode(Bert::encode(array('a' => 'b'))),
+			array('a' => 'b')
+		);
+	}
+
 }

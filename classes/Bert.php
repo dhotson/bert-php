@@ -20,6 +20,17 @@ class Bert
 		return '<<' . implode(',', $bytes) . '>>';
 	}
 
+	public static function a($str)
+	{
+		return new Bert_Atom($str);
+	}
+
+	public static function t()
+	{
+		return new Bert_Tuple(func_get_args());
+	}
+
+
 	// --
 
 	public static function autoload($class)
