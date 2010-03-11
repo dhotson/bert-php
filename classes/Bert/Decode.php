@@ -226,9 +226,18 @@ class Bert_Decode
 		elseif ($val == Bert::a('false'))
 			return false;
 		elseif ($val == Bert::a('time'))
-			return array($this->readAnyRaw() * 1000000 + $this->readAnyRaw(), + $this->readAnyRaw()); // TODO dhotson, use an appropriate Time type
+			return new Bert_Time($this->readAnyRaw(), $this->readAnyRaw(), $this->readAnyRaw());
 		elseif ($val == Bert::a('regex'))
-			throw new Exception('Not implemented yet');
+		{
+			$source = $this->readAnyRaw();
+			$opts = $this->readAnyRaw();
+
+			$options = array();
+			foreach ($opts as $name)
+				$options []= "$name";
+
+			return new Bert_Regex($source, $options);
+		}
 		elseif ($val == Bert::a('dict'))
 			return $this->readDict();
 		else

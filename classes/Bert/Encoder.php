@@ -14,14 +14,14 @@ class Bert_Encoder
 	}
 
 	/**
-	 * Convert complex PHP form to a simple PHP form.
+	 * Convert complex PHP type to a simple BERT compatible PHP type.
 	 * @param $obj is the object to convert
 	 *
 	 * @return object
 	 */
 	public static function convert($obj)
 	{
-		if (is_array($obj) && self::_isAssocArray($obj))
+		if (is_array($obj) && self::_isDict($obj))
 		{
 			$pairs = array();
 			foreach ($obj as $k => $v)
@@ -44,6 +44,25 @@ class Bert_Encoder
 				array_map(
 					array('self', 'convert'),
 					iterator_to_array($obj)));
+		}
+		elseif ($obj instanceof Bert_Time)
+		{
+			return new Bert_Tuple(array(
+				Bert_Atom::bert(),
+				new Bert_Atom('time'),
+				$obj->megaseconds,
+				$obj->seconds,
+				$obj->microseconds,
+			));
+		}
+		elseif ($obj instanceof Bert_Regex)
+		{
+			return new Bert_Tuple(array(
+				Bert_Atom::bert(),
+				new Bert_Atom('regex'),
+				$obj->source,
+				array_map(array('Bert','a'), $obj->options) // atom-ise options
+			));
 		}
 		elseif (is_array($obj))
 		{
@@ -76,8 +95,8 @@ class Bert_Encoder
 		}
 	}
 
-	// Check if array is associative or not
-	private static function _isAssocArray($array)
+	// Check if array is associative or not.. stolen from a comment on php.net
+	private static function _isDict($array)
 	{
 		return (is_array($array) && 0 !== count(array_diff_key($array, array_keys(array_keys($array)))));
 	}

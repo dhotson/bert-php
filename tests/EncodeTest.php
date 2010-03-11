@@ -7,7 +7,7 @@ class EncodeTest extends UnitTestCase
 	public function testEncodeSmallInteger()
 	{
 		$this->assertEqual(
-			Bert::encode(42),
+			Bert_Encode::encode(42),
 			pack('c*', 131, 97, 42)
 		);
 	}
@@ -15,7 +15,7 @@ class EncodeTest extends UnitTestCase
 	public function testEncodeInteger()
 	{
 		$this->assertEqual(
-			Bert::encode(1000),
+			Bert_Encode::encode(1000),
 			pack('c*', 131, 98, 0, 0, 3, 232)
 		);
 	}
@@ -23,7 +23,7 @@ class EncodeTest extends UnitTestCase
 	public function testEncodeFloat()
 	{
 		$this->assertEqual(
-			Bert::encode(1.125),
+			Bert_Encode::encode(1.125),
 			pack('c*', 131, 99)."1.125000000000000e+0"
 		);
 	}
@@ -31,7 +31,7 @@ class EncodeTest extends UnitTestCase
 	public function testEncodeAtom()
 	{
 		$this->assertEqual(
-			Bert::encode(new Bert_Atom('test')),
+			Bert_Encode::encode(new Bert_Atom('test')),
 			pack('c*', 131, 100, 0, 4)."test"
 		);
 	}
@@ -39,7 +39,7 @@ class EncodeTest extends UnitTestCase
 	public function testEncodeSmallTuple()
 	{
 		$this->assertEqual(
-			Bert::encode(new Bert_Tuple(array(10,20,30))),
+			Bert_Encode::encode(new Bert_Tuple(array(10,20,30))),
 			pack('c*', 131, 104, 3, 97, 10, 97, 20, 97, 30)
 		);
 	}
@@ -49,7 +49,7 @@ class EncodeTest extends UnitTestCase
 		$a = array_fill(0, 301, 42);
 
 		$this->assertEqual(
-			Bert::encode(new Bert_Tuple($a)),
+			Bert_Encode::encode(new Bert_Tuple($a)),
 			pack('c*', 131, 105, 0, 0, 1, 45) . str_repeat(pack('c*', 97, 42), 301)
 		);
 	}
@@ -57,7 +57,7 @@ class EncodeTest extends UnitTestCase
 	public function testEncodeList()
 	{
 		$this->assertEqual(
-			Bert::encode(array(41,42,43)),
+			Bert_Encode::encode(array(41,42,43)),
 			pack('c*', 131, 108, 0, 0, 0, 3, 97, 41, 97, 42, 97, 43, 106)
 		);
 	}
@@ -65,7 +65,7 @@ class EncodeTest extends UnitTestCase
 	public function testEncodeEmptyList()
 	{
 		$this->assertEqual(
-			Bert::encode(array()),
+			Bert_Encode::encode(array()),
 			pack('c*', 131, 106)
 		);
 	}
@@ -73,7 +73,7 @@ class EncodeTest extends UnitTestCase
 	public function testEncodeNestedList()
 	{
 		$this->assertEqual(
-			Bert::encode(array(1, array(2))),
+			Bert_Encode::encode(array(1, array(2))),
 			pack('c*', 131, 108, 0, 0, 0, 2, 97, 1, 108, 0, 0, 0, 1, 97, 2, 106, 106)
 		);
 	}
@@ -81,16 +81,8 @@ class EncodeTest extends UnitTestCase
 	public function testEncodeBinary()
 	{
 		$this->assertEqual(
-			Bert::encode("hello world\x00\xFF"),
+			Bert_Encode::encode("hello world\x00\xFF"),
 			pack('c*', 131, 109, 0, 0, 0, 13)."hello world\x00\xFF"
-		);
-	}
-
-	public function testEncodeAssocArray()
-	{
-		$this->assertEqual(
-			Bert::decode(Bert::encode(array('a' => 'b'))),
-			array('a' => 'b')
 		);
 	}
 
