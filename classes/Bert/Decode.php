@@ -156,12 +156,44 @@ class Bert_Decode
 
 	public function readSmallBignum()
 	{
-		throw new Exception('Not implemented yet');
+		if ($this->read1() !== Bert_Types::SMALL_BIGNUM)
+			$this->_fail('Invalid Type, not a small bignum');
+
+		$count = $this->read1();
+		$negative = $this->read1();
+
+		$result = '0';
+		for ($i=0; $i<$count; $i++)
+		{
+			$val = $this->read1();
+			$result = bcadd("$result", bcmul($val, bcpow('256',$i))); // $result += $val * (256 ^ $i)
+		}
+
+		if ($negative)
+			$result = bcmul('-1', $result);
+
+		return $result;
 	}
 
 	public function readLargeBignum()
 	{
-		throw new Exception('Not implemented yet');
+		if ($this->read1() !== Bert_Types::LARGE_BIGNUM)
+			$this->_fail('Invalid Type, not a large bignum');
+
+		$count = $this->read4();
+		$negative = $this->read1();
+
+		$result = '0';
+		for ($i=0; $i<$count; $i++)
+		{
+			$val = $this->read1();
+			$result = bcadd("$result", bcmul($val, bcpow('256',$i))); // $result += $val * (256 ^ $i)
+		}
+
+		if ($negative)
+			$result = bcmul('-1', $result);
+
+		return $result;
 	}
 
 	public function readFloat()

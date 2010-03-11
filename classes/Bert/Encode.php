@@ -30,9 +30,11 @@ class Bert_Encode
 			return $this->writeSymbol($obj);
 		elseif (is_integer($obj))
 			return $this->writeInteger($obj);
+		elseif (is_string($obj) && preg_match('/^-?[1-9][0-9]+$/', $obj))
+			return $this->writeBignum($obj);
 		elseif (is_float($obj))
 			return $this->writeFloat($obj);
-		if ($obj instanceof Bert_Tuple)
+		elseif ($obj instanceof Bert_Tuple)
 			return $this->writeTuple($obj);
 		elseif (is_array($obj))
 			return $this->writeList($obj);
@@ -86,7 +88,7 @@ class Bert_Encode
 			$this->write1(Bert_Types::SMALL_INT);
 			$this->write1($num);
 		}
-		else if ($num <= Bert_Types::MAX_INT && $num >= Bert_Types::MIN_INT)
+		elseif ($num <= Bert_Types::MAX_INT && $num >= Bert_Types::MIN_INT)
 		{
 			$this->write1(Bert_Types::INT);
 			$this->write4($num);
@@ -105,26 +107,37 @@ class Bert_Encode
 
 	public function writeBignum($num)
 	{
-		throw new Exception('Not implemented yet');
+		$negative = bccomp($num, '0') < 0;
 
-		// if (strlen($num) < 256)
-		// {
-		// 	$this->write1(Bert_Types::SMALL_BIGNUM);
-		// 	$this->write1(strlen($num));
-		// 	$this->writeBignumGuts($num);
-		// }
-		// else
-		// {
-		// 	$this->write1(Bert_Types::LARGE_BIGNUM);
-		// 	$this->write4(strlen($num));
-		// 	$this->writeBignumGuts($num);
-		// }
+		// Absolute
+		if ($negative)
+			$num = bcmul('-1', $num);
+
+		// Convert $num to base-256
+		$values = array();
+		while (bccomp($num, 0) > 0)
+		{
+			$values []= intval(bcmod($num, '256'));
+			$num = bcdiv($num, '256');
+		}
+
+		if (count($values) < 256)
+		{
+			$this->write1(Bert_Types::SMALL_BIGNUM);
+			$this->write1(count($values));
+			$this->write1($negative ? 1 : 0);
+			foreach ($values as $v)
+				$this->write1($v);
+		}
+		else
+		{
+			$this->write1(Bert_Types::LARGE_BIGNUM);
+			$this->write4(count($values));
+			$this->write1($negative ? 1 : 0);
+			foreach ($values as $v)
+				$this->write1($v);
+		}
 	}
-
-	// public function writeBignumGuts($num)
-	// {
-	//	$this->write1(bccomp($num, '0') >= 0 ? 1 : 0);
-	// }
 
 	public function writeTuple($data)
 	{

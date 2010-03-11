@@ -20,6 +20,26 @@ class EncodeTest extends UnitTestCase
 		);
 	}
 
+	public function testEncodeBignum()
+	{
+		$this->assertEqual(
+			Bert_Encode::encode('868'),
+			pack('c*', 131, 110, 2, 0, 100, 3)
+		);
+
+		$this->assertEqual(
+			Bert_Encode::encode('-868'),
+			pack('c*', 131, 110, 2, 1, 100, 3)
+		);
+
+		// 700 digit large bignum.. just check it can be encoded and decoded
+		$largenum = str_repeat('1', 700);
+		$this->assertEqual(
+			Bert_Decode::decode(Bert_Encode::encode($largenum)),
+			$largenum
+		);
+	}
+
 	public function testEncodeFloat()
 	{
 		$this->assertEqual(

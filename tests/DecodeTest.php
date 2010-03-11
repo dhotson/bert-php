@@ -20,6 +20,19 @@ class DecodeTest extends UnitTestCase
 		);
 	}
 
+	public function testDecodeBignum()
+	{
+		$this->assertEqual(
+			Bert_Decode::decode(pack('c*', 131, 110, 2, 0, 100, 3)),
+			'868'
+		);
+
+		$this->assertEqual(
+			Bert_Decode::decode(pack('c*', 131, 110, 2, 1, 100, 3)),
+			'-868'
+		);
+	}
+
 	public function testDecodeFloat()
 	{
 		$this->assertEqual(
