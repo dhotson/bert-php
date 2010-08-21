@@ -15,6 +15,6 @@ class Bert_Rpc_Request
 
 	public function __call($cmd, $args)
 	{
-		return new Bert_Rpc_Module($this->_svc, $this, $cmd);
+		return new Bert_Rpc_Module($this->_svc, $this, new Bert_Atom($cmd));
 	}
 }

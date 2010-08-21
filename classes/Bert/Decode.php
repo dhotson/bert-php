@@ -287,7 +287,7 @@ class Bert_Decode
 		else
 			$length = 0;
 
-		$arr == array();
+		$arr = array();
 		for ($i=0; $i<$length; $i++)
 		{
 			$pair = $this->readAnyRaw();

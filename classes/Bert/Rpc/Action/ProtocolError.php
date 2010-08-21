@@ -1,6 +1,5 @@
 <?php
 
-class Bert_Rpc_Errors_ProtocolError extends Exception
+class Bert_Rpc_Action_ProtocolError extends Bert_Rpc_Action_RpcError
 {
-	public function
 }

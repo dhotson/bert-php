@@ -38,7 +38,7 @@ class Bert_Rpc_Action
 	private function _write($sock, $bert)
 	{
 		socket_write($sock, pack('N', strlen($bert)));
-		socket_write($bert);
+		socket_write($sock, $bert);
 	}
 
 	private function _read($sock, $len, $timeout)
@@ -52,7 +52,7 @@ class Bert_Rpc_Action
 			$w = array();
 			$e = array();
 
-			$n = socket_select($r, $w, $e, $timeout)
+			$n = socket_select($r, $w, $e, $timeout);
 			if ($n === false)
 			{
 				throw new Bert_Rpc_Error_ConnectionError(
@@ -66,7 +66,7 @@ class Bert_Rpc_Action
 					$this->_svc->host,
 					$this->_svc->port,
 					$this->_svc->timeout
-				)
+				);
 			}
 
 			$bytes = socket_recvfrom($sock, $msg, $len - $size, 0, $name, $port);
@@ -91,11 +91,12 @@ class Bert_Rpc_Action
 
 	private function _transaction($bertRequest)
 	{
-		$sock = $this->_connectTo($this->_svc->host, $this->_svc->port, $timeout);
+		$sock = $this->_connectTo($this->_svc->host, $this->_svc->port, $this->_svc->timeout);
 
 		if (isset($this->_req->options)
 			&& isset($this->_req->options['cache'])
-			&& isset($this->_req->options['cache'][0] == 'validation'))
+			&& isset($this->_req->options['cache'][0])
+			&& $this->_req->options['cache'][0] == 'validation')
 		{
 			$token = $this->_req->options['cache'][1];
 			$infoBert = Bert_Rpc_Action_Encodes::encodeRequest(array('info', 'cache', array('validation', $token)));
@@ -103,13 +104,13 @@ class Bert_Rpc_Action
 		}
 
 		$this->_write($sock, $bertRequest);
-		$lenheader = $this->_read($sock, 4, $timeout);
+		$lenheader = $this->_read($sock, 4, $this->_svc->timeout);
 
 		if (!$lenheader)
 			throw new Bert_Rpc_Error_ProtocolError(Bert_Rpc_Error_ProtocolError::NO_HEADER);
 
 		$len = array_shift(unpack('N', $lenheader));
-		$bertResponse = $this->_read($sock, $len, $timeout);
+		$bertResponse = $this->_read($sock, $len, $this->_svc->timeout);
 
 		if (!$bertResponse)
 			throw new Bert_Rpc_Error_ProtocolError(Bert_Rpc_Error_ProtocolError::NO_DATA);
@@ -126,14 +127,13 @@ class Bert_Rpc_Action
 		if (false === socket_set_option($sock, SOL_TCP, TCP_NODELAY, 1))
 			throw new Exception('Unable to set option on socket: '. socket_strerror(socket_last_error()));
 
-		$secs = intval($timeout);
-		$usecs = intval(($timeout - $secs) * 1000000);
+		$sec = intval($timeout);
+		$usec = intval(($timeout - $sec) * 1000000);
 
-		$optval = pack("l_2", $secs, $usecs);
-		if (false === socket_set_option($sock, SOL_SOCKET, SO_RCVTIMEO, $optval))
+		if (false === socket_set_option($sock, SOL_SOCKET, SO_RCVTIMEO, array("sec" => $sec, "usec" => $usec)))
 			throw new Exception('Unable to set option on socket: '. socket_strerror(socket_last_error()));
 
-		if (false === socket_set_option($sock, SOL_SOCKET, SO_SNDTIMEO, $optval))
+		if (false === socket_set_option($sock, SOL_SOCKET, SO_SNDTIMEO, array("sec" => $sec, "usec" => $usec)))
 			throw new Exception('Unable to set option on socket: '. socket_strerror(socket_last_error()));
 
 		if (false === socket_connect($sock, $host, $port))

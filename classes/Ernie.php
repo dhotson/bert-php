@@ -43,13 +43,15 @@ class Ernie
 
 	public static function dispatch($mod, $fun, $args)
 	{
-		if (null === ($mod = self::$_mods[$mod]))
+		if (null === ($mod = self::$_mods["$mod"]))
 			throw new Ernie_ServerError("No such module '$mod'");
 
 		if (null === ($callback = $mod->getFun($fun)))
 			throw new Ernie_ServerError("No such function '$mod:$fun'");
 
-		return call_user_func_array($fun, $args);
+		$callback = $mod->getFun($fun);
+
+		return call_user_func_array($callback, $args);
 	}
 
 	public static function read4($input)
@@ -79,13 +81,12 @@ class Ernie
 
 	public static function start()
 	{
-		// dirty hack - TODO
-		$input = fopen('/proc/self/fd/3', 'r');
-		$output = fopen('/proc/self/fd/4', 'w');
+		$input = fdopen(3, 'r');
+		$output = fdopen(4, 'w');
 
 		while (true)
 		{
-			$obj = $this->readBerp($input);
+			$obj = self::readBerp($input);
 
 			if (!isset($obj))
 			{
@@ -189,8 +190,8 @@ class Ernie_Module
 
 	public function getFun($name)
 	{
-		return isset($this->_funs[$name])
-			? $this->_funs[$name]
+		return isset($this->_funs["$name"])
+			? $this->_funs["$name"]
 			: null;
 	}
 }

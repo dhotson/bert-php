@@ -2,15 +2,15 @@
 
 class Bert_Rpc_Service
 {
-	private $_host;
-	private $_port;
-	private $_timeout;
+	public $host;
+	public $port;
+	public $timeout;
 
 	public function __construct($host, $port, $timeout = null)
 	{
-		$this->_host = $host;
-		$this->_port = $port;
-		$this->_timeout = $timeout;
+		$this->host = $host;
+		$this->port = $port;
+		$this->timeout = $timeout;
 	}
 
 	public function call($options = null)
