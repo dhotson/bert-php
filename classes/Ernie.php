@@ -34,9 +34,11 @@ class Ernie
 			$class = get_class($obj);
 
 		$callbacks = array();
-		$rc = new ReflectionClass();
+		$rc = new ReflectionClass($class);
 		foreach ($rc->getMethods(ReflectionMethod::IS_PUBLIC) as $method)
-			$callbacks []= array($obj, $method->name);
+		{
+			$callbacks[$method->name] = array($obj, $method->name);
+		}
 
 		self::mod($name, $callbacks);
 	}
@@ -193,6 +195,11 @@ class Ernie_Module
 		return isset($this->_funs["$name"])
 			? $this->_funs["$name"]
 			: null;
+	}
+
+	public function __toString()
+	{
+		return "$this->_name";
 	}
 }
 

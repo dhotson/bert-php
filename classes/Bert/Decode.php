@@ -226,7 +226,7 @@ class Bert_Decode
 		if ($arity > 0)
 		{
 			$tag = $this->readAnyRaw();
-			if ($tag == Bert::a('bert'))
+			if (is_object($tag) && $tag == Bert::a('bert'))
 			{
 				return $this->readComplexType($arity);
 			}
