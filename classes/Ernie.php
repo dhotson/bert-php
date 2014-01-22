@@ -83,8 +83,8 @@ class Ernie
 
 	public static function start()
 	{
-		$input = fdopen(3, 'r');
-		$output = fdopen(4, 'w');
+		$input = fopen("php://fd/3", 'r');
+		$output = fopen("php://fd/4", 'w');
 
 		while (true)
 		{

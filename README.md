@@ -20,13 +20,6 @@ These will both be converted to (in Erlang syntax):
 
     {foo, [1, 2, 3]}
 
-Requirements
------
-
-You will need to install the fdopen-php extension:
-http://github.com/dhotson/fdopen-php
-
-
 Usage
 -----
 
